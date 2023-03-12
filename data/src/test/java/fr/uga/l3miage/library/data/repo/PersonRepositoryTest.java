@@ -3,7 +3,6 @@ package fr.uga.l3miage.library.data.repo;
 import fr.uga.l3miage.library.data.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.sql.Date;
 import java.time.ZonedDateTime;

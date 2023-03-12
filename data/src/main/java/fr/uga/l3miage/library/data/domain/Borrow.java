@@ -4,13 +4,39 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
+@Entity
 public class Borrow {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @ManyToMany
     private List<Book> books;
+
+    @Column(name="start")
+    @Temporal(TemporalType.DATE)    
     private Date start;
+
+    @Column(name="requestedReturn")
+    @Temporal(TemporalType.DATE) 
     private Date requestedReturn;
+
+    @OneToOne
     private User borrower;
+
+    @OneToOne
     private Librarian librarian;
+
     private boolean finished;
 
     public Long getId() {

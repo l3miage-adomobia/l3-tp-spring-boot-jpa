@@ -1,21 +1,42 @@
 package fr.uga.l3miage.library.data.domain;
 
-import jakarta.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Book {
 
+@Entity
+public class Book {
+    //l'id est généré automatiquement
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column (name="title", nullable = false)
     private String title;
+
+    @Column (name="isbn", nullable = false)
     private long isbn;
+
+    @Column (name="publisher")
     private String publisher;
+
+    @Column (name="yearB")
     private short year;
+
+    @Column (name="language")
     private Language language;
 
-    @Transient
+    @Column
+    @ManyToMany
     private Set<Author> authors;
 
     public Long getId() {
