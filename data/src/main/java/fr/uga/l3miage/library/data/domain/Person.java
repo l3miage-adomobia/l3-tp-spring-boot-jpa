@@ -14,8 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 
 @Entity
@@ -32,13 +30,12 @@ public abstract class Person {
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
 
-    @Column (name = "firstName")
+    @Column (name = "firstName" ,nullable=false)
     private String firstName;
-    @Column (name = "lastName")
+    @Column (name = "lastName" ,nullable=false)
     private String lastName;
 
     @Column(name="birth")
-    @Temporal(TemporalType.DATE) 
     private Date birth;
 
     public enum Gender {

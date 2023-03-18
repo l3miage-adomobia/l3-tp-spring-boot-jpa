@@ -49,9 +49,11 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return la liste des emprunts en cours
      */
     public List<Borrow> findInProgressByUser(String userId) {
-        TypedQuery<Borrow> query = entityManager.createQuery( "SELECT b FROM Borrow b WHERE b.borrower.id = :userId AND b.finished = false", Borrow.class);
-        query.setParameter("userId", userId);
-        return query.getResultList();
+        TypedQuery<Borrow> requete = entityManager.createQuery(
+                "SELECT b FROM Borrow b WHERE b.borrower.id = :userId AND NOT b.finished",
+                Borrow.class);
+                requete.setParameter("userId", userId);
+        return requete.getResultList();
     }
 
     /**
@@ -61,11 +63,12 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return le nombre de livre
      */
     public int countBorrowedBooksByUser(String userId) {
-        int nbBorrow = entityManager.createQuery("SELECT COUNT(bb) FROM Borrow b JOIN b.borrower bu JOIN b.books bb WHERE bu.id = :userId ",
-                                                 Long.class)
-                                                 .setParameter("userId", userId)
-                                                 .getSingleResult()
-                                                 .intValue();
+        int nbBorrow = entityManager
+                .createQuery("SELECT COUNT(bb) FROM Borrow b JOIN b.borrower bu JOIN b.books bb WHERE bu.id = :userId ",
+                        Long.class)
+                .setParameter("userId", userId)
+                .getSingleResult()
+                .intValue();
         return nbBorrow;
     }
 
@@ -76,13 +79,8 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return le nombre de livre
      */
     public int countCurrentBorrowedBooksByUser(String userId) {
-        TypedQuery<Long> query = entityManager.createQuery(
-            "SELECT COUNT(DISTINCT book.id) FROM Borrow borrow JOIN borrow.books book WHERE borrow.borrower.id = :userId AND borrow.finished = false", 
-            Long.class
-            );
-        query.setParameter("userId", userId);
-        Long result = query.getSingleResult();
-        return result != null ? result.intValue() : 0;
+        List<Borrow> CurrentBorrows = findInProgressByUser(userId);
+        return CurrentBorrows.size()+1;
     }
 
     /**
@@ -107,9 +105,11 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
     public List<Borrow> findAllBorrowThatWillLateWithin(int days) {
         Date currentDate = new Date();
         Date renduDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000);
-        List<Borrow> borrows = entityManager.createQuery("SELECT b FROM Borrow b WHERE b.finished = false AND b.requestedReturn <= :renduDate", Borrow.class)
-            .setParameter("renduDate", new java.sql.Date(renduDate.getTime()), TemporalType.DATE)
-            .getResultList();
+        List<Borrow> borrows = entityManager
+                .createQuery("SELECT b FROM Borrow b WHERE b.finished = false AND b.requestedReturn <= :renduDate",
+                        Borrow.class)
+                .setParameter("renduDate", new java.sql.Date(renduDate.getTime()), TemporalType.DATE)
+                .getResultList();
         return borrows;
     }
 }

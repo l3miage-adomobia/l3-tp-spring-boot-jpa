@@ -6,16 +6,13 @@ import java.util.Objects;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
-// Attention le mot 'user' est reservé
 @Entity
 @DiscriminatorValue("USER")
 public class User extends Person {
 
     @Column(name="registered")
-    @Temporal(TemporalType.DATE) 
+    //@Temporal(TemporalType.DATE) 
     private Date registered;
 
     @Column(name="lateRatio")

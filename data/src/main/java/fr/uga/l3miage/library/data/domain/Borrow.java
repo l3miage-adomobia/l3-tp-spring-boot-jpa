@@ -11,29 +11,31 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 @Entity
 public class Borrow {
+    //id est l'identifiant de la table Borrow
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    //relation entre la table Borrow et la table Book de type * à *
     @ManyToMany
     private List<Book> books;
 
+    //date de début de l'emprunt , temporal precise le type
     @Column(name="start")
-    @Temporal(TemporalType.DATE)    
     private Date start;
 
+    //date de fin de l'emprunt , temporal precise le type
     @Column(name="requestedReturn")
-    @Temporal(TemporalType.DATE) 
     private Date requestedReturn;
 
+    //relation entre la table Borrow et la table User de type 1 à 1
     @OneToOne
     private User borrower;
 
+    //relation entre la table Borrow et la table Librarian de type 1 à 1
     @OneToOne
     private Librarian librarian;
 

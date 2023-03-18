@@ -4,13 +4,13 @@ import java.util.Objects;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @DiscriminatorValue("LIBRARIAN")
 public class Librarian extends Person {
 
-    @OneToOne
+    @ManyToOne
     private Librarian manager;
 
     public Librarian getManager() {

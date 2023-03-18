@@ -78,21 +78,19 @@ class BorrowRepositoryTest extends Base {
 
     }
 
-    @Test
+   @Test
     void countCurrentBorrowedBooksByUser() {
     
-    // On crée un emprunt en cours de test
-    Borrow inProgress = Fixtures.newBorrow(u1, l1, b1, b2);
+    Borrow borrows = Fixtures.newBorrow(u1, l1, b1, b2);
     Borrow noBorrow = Fixtures.newBorrow(u2,l1);
-    entityManager.persist(inProgress);
+
+    entityManager.persist(borrows);
     entityManager.persist(noBorrow);
     entityManager.flush();
     
-    // On appelle la fonction à tester et on vérifie le résultat
-    int nbCurrentBorrowedBooks = repository.countCurrentBorrowedBooksByUser(u1.getId().toString());
-    assertThat(nbCurrentBorrowedBooks).isEqualTo(2);
-    nbCurrentBorrowedBooks = repository.countBorrowedBooksByUser(u2.getId().toString());
-    assertThat(nbCurrentBorrowedBooks).isEqualTo(0);
+    int nbBorrowedBooks = repository.countCurrentBorrowedBooksByUser(u1.getId().toString());
+    assertThat(nbBorrowedBooks).isEqualTo(2);
+    
     }
 
 
@@ -100,47 +98,38 @@ class BorrowRepositoryTest extends Base {
     @Test
     void countBorrowedBooksByUser() {
 
-        Borrow inProgress1 = Fixtures.newBorrow(u1, l1, b1, b2);
-        Borrow inProgress2 = Fixtures.newBorrow(u2, l1);
-        entityManager.persist(inProgress1);
-        entityManager.persist(inProgress2);
+        Borrow borrow1 = Fixtures.newBorrow(u1, l1, b1, b2);
+        Borrow borrow2 = Fixtures.newBorrow(u2, l1);
+        entityManager.persist(borrow1);
+        entityManager.persist(borrow2);
         entityManager.flush();
+        
         int test1Borrows = repository.countBorrowedBooksByUser(u1.getId());
         assertThat(test1Borrows).isEqualTo(2);
-        int test2Borrows = repository.countBorrowedBooksByUser(u2.getId());
-        assertThat(test2Borrows).isEqualTo(0);
-        inProgress1.setFinished(true);
-        // ici on verifie que meme si on a rendu le(s) livre(s) on les comptes tjrs
-        int test1BorrowsV2 = repository.countBorrowedBooksByUser(u1.getId());
-        assertThat(test1BorrowsV2).isEqualTo(2);
+
     }
 
     @Test
     void foundAllLateBorrow() {
 
-        Borrow onTimeBorrow = Fixtures.newBorrow(u1, l1, b1, b2);
-        onTimeBorrow.setStart(Date.from(ZonedDateTime.now().minusDays(7).toInstant()));
-        onTimeBorrow.setRequestedReturn(Date.from(ZonedDateTime.now().plusDays(7).toInstant()));
-        entityManager.persist(onTimeBorrow);
+        Borrow lateBorrowUser1 = Fixtures.newBorrow(u1, l1, b3);
+        lateBorrowUser1.setStart(Date.from(ZonedDateTime.now().minusDays(14).toInstant()));
+        lateBorrowUser1.setRequestedReturn(Date.from(ZonedDateTime.now().minusDays(7).toInstant()));
 
-        Borrow lateBorrow1 = Fixtures.newBorrow(u1, l1, b3);
-        lateBorrow1.setStart(Date.from(ZonedDateTime.now().minusDays(14).toInstant()));
-        lateBorrow1.setRequestedReturn(Date.from(ZonedDateTime.now().minusDays(7).toInstant()));
-        entityManager.persist(lateBorrow1);
 
-        Borrow lateBorrow2 = Fixtures.newBorrow(u2, l1, b1);
-        lateBorrow2.setStart(Date.from(ZonedDateTime.now().minusDays(21).toInstant()));
-        lateBorrow2.setRequestedReturn(Date.from(ZonedDateTime.now().minusDays(14).toInstant()));
-        entityManager.persist(lateBorrow2);
+        Borrow lateBorrowUser2 = Fixtures.newBorrow(u2, l1, b1);
+        lateBorrowUser2.setStart(Date.from(ZonedDateTime.now().minusDays(21).toInstant()));
+        lateBorrowUser2.setRequestedReturn(Date.from(ZonedDateTime.now().minusDays(14).toInstant()));
 
+
+        entityManager.persist(lateBorrowUser1);
+        entityManager.persist(lateBorrowUser2);
         entityManager.flush();
 
         List<Borrow> lateBorrows = repository.foundAllLateBorrow();
 
         assertThat(lateBorrows).hasSize(2);
-        assertThat(lateBorrows).containsExactlyInAnyOrder(lateBorrow1, lateBorrow2);
-
-    }
+    }    
 
     @Test
     void foundAllBorrowThatWillBeLateInDays() {

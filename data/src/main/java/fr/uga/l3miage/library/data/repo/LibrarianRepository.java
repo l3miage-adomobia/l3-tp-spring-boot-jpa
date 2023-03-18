@@ -2,6 +2,8 @@ package fr.uga.l3miage.library.data.repo;
 
 import fr.uga.l3miage.library.data.domain.Librarian;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -40,15 +42,17 @@ public class LibrarianRepository implements CRUDRepository<String, Librarian> {
 
     /**
      * Récupere les bibliothéquaires ayant enregistré le plus de prêts
+     * 
      * @return les bibliothéquaires les plus actif
      */
     public List<Librarian> top3WorkingLibrarians() {
-        List<Librarian> lib = entityManager.createQuery("SELECT bl FROM Borrow b JOIN b.librarian bl GROUP BY bl ORDER BY COUNT(b) DESC",
-                                                        Librarian.class)
-                                            .setFirstResult(0)
-                                            .setMaxResults(3)
-                                            .getResultList();
-        return lib;
+        TypedQuery<Librarian> requete = entityManager.createQuery(
+                "SELECT lib FROM Borrow borrow JOIN borrow.librarian lib GROUP BY lib ORDER BY COUNT(borrow) DESC",
+                Librarian.class)
+                .setFirstResult(0)
+                .setMaxResults(3);
+        List<Librarian> librarians = requete.getResultList();
+        return librarians;
     }
 
 }
